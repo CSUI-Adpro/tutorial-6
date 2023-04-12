@@ -84,10 +84,10 @@ public class PaymentService implements IPaymentService{
         return discountedPriceFuture.thenAcceptAsync(discountedPrice -> {
             if (!isRedeemed[0]) {
                 isRedeemed[0] = true;
-                boolean couponIsUsed = discountedPrice == -1;
-                customer.setBalanceAsync(customer.getBalance() - (couponIsUsed ? discountedPrice : foodPrice))
+                boolean couponIsUsed = discountedPrice == 0.0;
+                customer.setBalanceAsync(customer.getBalance() - (!couponIsUsed ? discountedPrice : foodPrice))
                         .thenAcceptAsync((newBalance) -> {
-                            if (couponIsUsed) {
+                            if (!couponIsUsed) {
                                 paymentLogRepository.add(new PaymentLog(customer, food, coupon, discountedPrice));
                             } else {
                                 paymentLogRepository.add(new PaymentLog(customer, food, foodPrice));

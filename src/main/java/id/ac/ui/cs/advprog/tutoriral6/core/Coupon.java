@@ -31,7 +31,7 @@ public class Coupon {
                 isRedeemed = true;
                 return price - (discount/100) * price;
             }
-            return -1.0;
+            return 0.0;
         });
     }
 }
