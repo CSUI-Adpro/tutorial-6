@@ -64,9 +64,10 @@ public class PaymentService implements IPaymentService{
         return CompletableFuture.allOf(foodFuture, couponFuture, customerFuture)
                 .thenComposeAsync(ignored -> {
                     Food food = foodFuture.join();
-                    return couponFuture.thenApplyAsync(coupon -> {
-                        Customer customer = customerFuture.join();
+                    Coupon coupon = couponFuture.join();
+                    Customer customer = customerFuture.join();
 
+                    return CompletableFuture.supplyAsync(() -> {
                         try {
                             reduceCustomerBalance(customer, food, coupon);
                         } catch (InterruptedException e) {
