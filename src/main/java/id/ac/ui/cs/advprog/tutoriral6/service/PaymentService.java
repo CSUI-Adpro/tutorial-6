@@ -63,14 +63,17 @@ public class PaymentService implements IPaymentService{
         CompletableFuture<Customer> customerFuture = customerRepository.getAsync(paymentDto.getCustomerId());
 
         return foodFuture.thenCombineAsync(couponFuture, (food, coupon) -> {
-            try {
-                Customer customer = customerFuture.get();
-                reduceCustomerBalance(customer, food, coupon);
-                return new Order(customer.getName(), food.getName(), coupon.getDiscount());
-            } catch (InterruptedException | ExecutionException e) {
-                throw new RuntimeException(e);
-            }
-        });
+            CompletableFuture<Customer> customerFuture2 = customerFuture.thenApplyAsync(customer -> {
+                try {
+                    reduceCustomerBalance(customer, food, coupon);
+                    return customer;
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+
+            return customerFuture2.thenApplyAsync(customer -> new Order(customer.getName(), food.getName(), coupon.getDiscount()));
+        }).join();
     }
 
     private CompletableFuture<Void> reduceCustomerBalance(Customer customer, Food food, Coupon coupon) throws InterruptedException {
