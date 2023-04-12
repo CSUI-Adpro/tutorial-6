@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Order Payment</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+<body>
+<div class="d-flex justify-content-center">
+    <div style="margin: 5em 0 2em 1em;">
+        <h1 class="h1 d-flex">Order Payment</h1>
+    </div>
+</div>
+<div class="d-flex justify-content-center">
+    <form method="post" action="pay">
+        <div class="col">
+            <div class="row" style="margin: 1em 0 0 -100%;">
+                <label for="couponId">Select Coupon: </label>
+            </div>
+            <div class="row" style="margin: 0.5em 0 2em -100%; width: 300%;">
+                <select id="couponId" name="couponId" style="width: 100%; padding: 0.25em 0.1em; border: 1px solid rgba(0, 0, 0, .25); border-radius: 3px;">
+                    <option th:each="coupon : ${allCoupon}"
+                            th:value="${coupon.getId()}"
+                            th:text="${coupon.getId()} + '-' + ${coupon.getDiscount()}">
+                        No Coupon
+                    </option>
+                </select>
+            </div>
+            <div class="row" style="margin: 1em 0 0 -100%;">
+                <label for="foodId">Select Food: </label>
+            </div>
+            <div class="row" style="margin: 0.5em 0 2em -100%; width: 300%;">
+                <select id="foodId" name="foodId" style="width: 100%; padding: 0.25em 0.1em; border: 1px solid rgba(0, 0, 0, .25); border-radius: 3px;">
+                    <option th:each="food : ${allFood}"
+                            th:value="${food.getId()}"
+                            th:text="${food.getName()} + '-' + ${food.getPrice()}">
+                    </option>
+                </select>
+            </div>
+            <div class="row" style="margin: 1em 0 0 -100%;">
+                <label for="customerId">Select Customer: </label>
+            </div>
+            <div class="row" style="margin: 0.5em 0 2em -100%; width: 300%;">
+                <select id="customerId" name="customerId" style="width: 100%; padding: 0.25em 0.1em; border: 1px solid rgba(0, 0, 0, .25); border-radius: 3px;">
+                    <option th:each="customer : ${allCustomer}"
+                            th:value="${customer.getId()}"
+                            th:text="${customer.getName()} + '-' + ${customer.getBalance()}">
+                    </option>
+                </select>
+            </div>
+            <div class="row" style="margin: 1em 0 2em -100%; width: 300%;">
+                <button class="btn btn-primary" type="submit" style="width: 100%;">Pay</button>
+            </div>
+        </div>
+    </form>
+</div>
+</body>
+</html>
