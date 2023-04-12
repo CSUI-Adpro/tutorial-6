@@ -4,6 +4,7 @@ import id.ac.ui.cs.advprog.tutoriral6.core.*;
 import id.ac.ui.cs.advprog.tutoriral6.core.dto.PaymentDto;
 import id.ac.ui.cs.advprog.tutoriral6.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -54,6 +55,7 @@ public class PaymentService implements IPaymentService{
     }
 
     @Override
+    @Async
     public CompletableFuture<Order> pay(PaymentDto paymentDto) {
         CompletableFuture<Food> foodFuture = foodRepository.get(paymentDto.getFoodId());
         CompletableFuture<Coupon> couponFuture = couponRepository.get(paymentDto.getCouponId());

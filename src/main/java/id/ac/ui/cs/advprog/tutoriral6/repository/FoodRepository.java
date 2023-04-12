@@ -1,5 +1,6 @@
 package id.ac.ui.cs.advprog.tutoriral6.repository;
 import id.ac.ui.cs.advprog.tutoriral6.core.Food;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Repository;
 
 import java.util.concurrent.CompletableFuture;
@@ -14,6 +15,7 @@ public class FoodRepository extends BaseRepository<Food>{
     }
 
     @Override
+    @Async
     public CompletableFuture<Food> get(String id) {
         return CompletableFuture.supplyAsync(() -> {
             try {

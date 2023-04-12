@@ -1,5 +1,6 @@
 package id.ac.ui.cs.advprog.tutoriral6.repository;
 import id.ac.ui.cs.advprog.tutoriral6.core.Customer;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Repository;
 
 import java.util.concurrent.CompletableFuture;
@@ -14,6 +15,7 @@ public class CustomerRepository extends BaseRepository<Customer>{
     }
 
     @Override
+    @Async
     public CompletableFuture<Customer> get(String id) {
         return CompletableFuture.supplyAsync(() -> {
             try {

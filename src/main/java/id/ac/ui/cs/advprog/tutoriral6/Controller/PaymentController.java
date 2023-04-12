@@ -6,6 +6,7 @@ import id.ac.ui.cs.advprog.tutoriral6.core.dto.PaymentDto;
 import id.ac.ui.cs.advprog.tutoriral6.repository.OrderRepository;
 import id.ac.ui.cs.advprog.tutoriral6.service.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -33,6 +34,7 @@ public class PaymentController {
     }
 
 
+    @Async
     @PostMapping(path={"pay","pay/"})
     public CompletableFuture<String> pay(@RequestParam String foodId,
                                          @RequestParam String couponId,

@@ -1,5 +1,6 @@
 package id.ac.ui.cs.advprog.tutoriral6.repository;
 import id.ac.ui.cs.advprog.tutoriral6.core.Coupon;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
@@ -25,6 +26,7 @@ public abstract class BaseRepository<T> {
 
     public abstract void  add(T object) throws InterruptedException;
 
+    @Async
     public abstract CompletableFuture<T> get(String id) throws InterruptedException;
 
     public List<T> all() {

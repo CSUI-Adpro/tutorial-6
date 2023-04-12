@@ -1,6 +1,7 @@
 package id.ac.ui.cs.advprog.tutoriral6.repository;
 
 import id.ac.ui.cs.advprog.tutoriral6.core.Order;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Repository;
 
 import java.util.concurrent.CompletableFuture;
@@ -14,6 +15,7 @@ public class OrderRepository extends BaseRepository<Order>{
     }
 
     @Override
+    @Async
     public CompletableFuture<Order> get(String id) {
         return CompletableFuture.supplyAsync(() -> map.get(id));
     }
