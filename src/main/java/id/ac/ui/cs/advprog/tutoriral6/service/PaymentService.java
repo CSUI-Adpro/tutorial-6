@@ -73,17 +73,27 @@ public class PaymentService implements IPaymentService{
         });
     }
 
-    private void reduceCustomerBalance(Customer customer, Food food, Coupon coupon) throws InterruptedException {
+    private CompletableFuture<Void> reduceCustomerBalance(Customer customer, Food food, Coupon coupon) throws InterruptedException {
         double foodPrice = food.getPrice();
         double discountedPrice = coupon.redeem(foodPrice);
-        boolean couponIsUsed = discountedPrice == -1 ;
-        if (couponIsUsed) {
-            customer.setBalance(customer.getBalance() - discountedPrice);
-            paymentLogRepository.add(new PaymentLog(customer, food, coupon, discountedPrice));
-        }
-        else {
-            customer.setBalance(customer.getBalance() - foodPrice);
-            paymentLogRepository.add(new PaymentLog(customer, food, foodPrice));
-        }
+        boolean couponIsUsed = discountedPrice == -1;
+
+        return CompletableFuture.runAsync(() -> {
+            if (couponIsUsed) {
+                try {
+                    customer.setBalance(customer.getBalance() - discountedPrice);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                paymentLogRepository.add(new PaymentLog(customer, food, coupon, discountedPrice));
+            } else {
+                try {
+                    customer.setBalance(customer.getBalance() - foodPrice);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                paymentLogRepository.add(new PaymentLog(customer, food, foodPrice));
+            }
+        });
     }
 }
