@@ -78,16 +78,22 @@ public class PaymentService implements IPaymentService{
 
     private CompletableFuture<Void> reduceCustomerBalanceAsync(Customer customer, Food food, Coupon coupon) throws InterruptedException {
         double foodPrice = food.getPrice();
-        double discountedPrice = coupon.redeem(foodPrice);
-        boolean couponIsUsed = discountedPrice == -1;
+        boolean[] isRedeemed = {false};
+        CompletableFuture<Double> discountedPriceFuture = coupon.redeemAsync(foodPrice);
 
-        return customer.setBalanceAsync(customer.getBalance() - (couponIsUsed ? discountedPrice : foodPrice))
-                .thenAcceptAsync((newBalance) -> {
-                    if (couponIsUsed) {
-                        paymentLogRepository.add(new PaymentLog(customer, food, coupon, discountedPrice));
-                    } else {
-                        paymentLogRepository.add(new PaymentLog(customer, food, foodPrice));
-                    }
-                });
+        return discountedPriceFuture.thenAcceptAsync(discountedPrice -> {
+            if (!isRedeemed[0]) {
+                isRedeemed[0] = true;
+                boolean couponIsUsed = discountedPrice == -1;
+                customer.setBalanceAsync(customer.getBalance() - (couponIsUsed ? discountedPrice : foodPrice))
+                        .thenAcceptAsync((newBalance) -> {
+                            if (couponIsUsed) {
+                                paymentLogRepository.add(new PaymentLog(customer, food, coupon, discountedPrice));
+                            } else {
+                                paymentLogRepository.add(new PaymentLog(customer, food, foodPrice));
+                            }
+                        });
+            }
+        });
     }
 }
