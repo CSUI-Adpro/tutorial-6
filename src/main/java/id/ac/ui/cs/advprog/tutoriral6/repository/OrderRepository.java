@@ -1,5 +1,6 @@
 package id.ac.ui.cs.advprog.tutoriral6.repository;
 
+import id.ac.ui.cs.advprog.tutoriral6.core.Food;
 import id.ac.ui.cs.advprog.tutoriral6.core.Order;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Repository;
@@ -18,5 +19,10 @@ public class OrderRepository extends BaseRepository<Order>{
     @Async
     public CompletableFuture<Order> get(String id) {
         return CompletableFuture.supplyAsync(() -> map.get(id));
+    }
+
+    @Async
+    public CompletableFuture<Order> getAsync(String id) {
+        return get(id);
     }
 }

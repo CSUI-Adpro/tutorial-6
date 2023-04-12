@@ -26,4 +26,9 @@ public class FoodRepository extends BaseRepository<Food>{
             return map.get(id);
         });
     }
+
+    @Async
+    public CompletableFuture<Food> getAsync(String id) {
+        return get(id);
+    }
 }

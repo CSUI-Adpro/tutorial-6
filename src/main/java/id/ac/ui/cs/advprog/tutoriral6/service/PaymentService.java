@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @Service
 public class PaymentService implements IPaymentService{
@@ -55,27 +56,21 @@ public class PaymentService implements IPaymentService{
     }
 
     @Override
-    @Async
+    @Async("asyncExecutor")
     public CompletableFuture<Order> pay(PaymentDto paymentDto) {
-        CompletableFuture<Food> foodFuture = foodRepository.get(paymentDto.getFoodId());
-        CompletableFuture<Coupon> couponFuture = couponRepository.get(paymentDto.getCouponId());
-        CompletableFuture<Customer> customerFuture = customerRepository.get(paymentDto.getCustomerId());
+        CompletableFuture<Food> foodFuture = foodRepository.getAsync(paymentDto.getFoodId());
+        CompletableFuture<Coupon> couponFuture = couponRepository.getAsync(paymentDto.getCouponId());
+        CompletableFuture<Customer> customerFuture = customerRepository.getAsync(paymentDto.getCustomerId());
 
-        return CompletableFuture.allOf(foodFuture, couponFuture, customerFuture)
-                .thenComposeAsync(ignored -> {
-                    Food food = foodFuture.join();
-                    Coupon coupon = couponFuture.join();
-                    Customer customer = customerFuture.join();
-
-                    return CompletableFuture.supplyAsync(() -> {
-                        try {
-                            reduceCustomerBalance(customer, food, coupon);
-                        } catch (InterruptedException e) {
-                            throw new RuntimeException(e);
-                        }
-                        return new Order(customer.getName(), food.getName(), coupon.getDiscount());
-                    });
-                });
+        return foodFuture.thenCombineAsync(couponFuture, (food, coupon) -> {
+            try {
+                Customer customer = customerFuture.get();
+                reduceCustomerBalance(customer, food, coupon);
+                return new Order(customer.getName(), food.getName(), coupon.getDiscount());
+            } catch (InterruptedException | ExecutionException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     private void reduceCustomerBalance(Customer customer, Food food, Coupon coupon) throws InterruptedException {

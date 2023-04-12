@@ -1,6 +1,7 @@
 package id.ac.ui.cs.advprog.tutoriral6.repository;
 
 import id.ac.ui.cs.advprog.tutoriral6.core.Coupon;
+import id.ac.ui.cs.advprog.tutoriral6.core.Food;
 import id.ac.ui.cs.advprog.tutoriral6.core.PaymentLog;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Repository;
@@ -19,5 +20,10 @@ public class PaymentLogRepository extends BaseRepository<PaymentLog>{
     @Async
     public CompletableFuture<PaymentLog> get(String id) {
         return CompletableFuture.completedFuture(map.get(id));
+    }
+
+    @Async
+    public CompletableFuture<PaymentLog> getAsync(String id) {
+        return get(id);
     }
 }
