@@ -7,11 +7,12 @@ import id.ac.ui.cs.advprog.tutoriral6.core.Order;
 import id.ac.ui.cs.advprog.tutoriral6.core.dto.PaymentDto;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public interface IPaymentService {
     List<Food> allFood();
     List<Coupon> allCoupon();
     List<Customer> allCustomer();
     List<Order> allOrder();
-    Order pay(PaymentDto paymentDto) throws InterruptedException;
+    CompletableFuture<Order> pay(PaymentDto paymentDto) throws InterruptedException;
 }

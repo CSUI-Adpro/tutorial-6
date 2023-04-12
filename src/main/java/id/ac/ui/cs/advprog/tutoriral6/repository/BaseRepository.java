@@ -1,10 +1,12 @@
 package id.ac.ui.cs.advprog.tutoriral6.repository;
+import id.ac.ui.cs.advprog.tutoriral6.core.Coupon;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.CompletableFuture;
 
 public abstract class BaseRepository<T> {
     Map<String, T> map = new HashMap<>();
@@ -23,7 +25,7 @@ public abstract class BaseRepository<T> {
 
     public abstract void  add(T object) throws InterruptedException;
 
-    public abstract T get(String id) throws InterruptedException;
+    public abstract CompletableFuture<T> get(String id) throws InterruptedException;
 
     public List<T> all() {
         return map.values().stream().toList();

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class PaymentService implements IPaymentService{
@@ -53,14 +54,25 @@ public class PaymentService implements IPaymentService{
     }
 
     @Override
-    public Order pay(PaymentDto paymentDto) throws InterruptedException {
+    public CompletableFuture<Order> pay(PaymentDto paymentDto) {
+        CompletableFuture<Food> foodFuture = foodRepository.get(paymentDto.getFoodId());
+        CompletableFuture<Coupon> couponFuture = couponRepository.get(paymentDto.getCouponId());
+        CompletableFuture<Customer> customerFuture = customerRepository.get(paymentDto.getCustomerId());
 
+        return CompletableFuture.allOf(foodFuture, couponFuture, customerFuture)
+                .thenComposeAsync(ignored -> {
+                    Food food = foodFuture.join();
+                    return couponFuture.thenApplyAsync(coupon -> {
+                        Customer customer = customerFuture.join();
 
-        Food food = foodRepository.get(paymentDto.getFoodId());
-        Coupon coupon = couponRepository.get(paymentDto.getCouponId());
-        Customer customer = customerRepository.get(paymentDto.getCustomerId());
-        reduceCustomerBalance(customer,food,coupon);
-        return new Order(customer.getName(),food.getName(),coupon.getDiscount());
+                        try {
+                            reduceCustomerBalance(customer, food, coupon);
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
+                        return new Order(customer.getName(), food.getName(), coupon.getDiscount());
+                    });
+                });
     }
 
     private void reduceCustomerBalance(Customer customer, Food food, Coupon coupon) throws InterruptedException {

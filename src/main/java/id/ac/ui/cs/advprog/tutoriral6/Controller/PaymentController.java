@@ -10,6 +10,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.concurrent.CompletableFuture;
+
 @Controller
 @RequestMapping(path={"order","order/"})
 public class PaymentController {
@@ -32,18 +34,18 @@ public class PaymentController {
 
 
     @PostMapping(path={"pay","pay/"})
-    public String pay(@RequestParam String foodId,
-                      @RequestParam String couponId,
-                      @RequestParam String customerId ) throws InterruptedException {
+    public CompletableFuture<String> pay(@RequestParam String foodId,
+                                         @RequestParam String couponId,
+                                         @RequestParam String customerId ) {
         PaymentDto paymentDto = new PaymentDto(couponId, customerId, foodId);
         long start = System.nanoTime();
-        Order order = paymentService.pay(paymentDto);
-        long end = System.nanoTime();
-
-        order.setTimeTaken( (double) (end - start) / 1_000_000_000);
-        orderRepository.add(order);
-
-        return "redirect:/order";
+        CompletableFuture<Order> orderFuture = paymentService.pay(paymentDto);
+        return orderFuture.thenApplyAsync(order -> {
+            long end = System.nanoTime();
+            order.setTimeTaken( (double) (end - start) / 1_000_000_000);
+            orderRepository.add(order);
+            return "redirect:/order";
+        });
     }
 
     @GetMapping(path={"pay","pay/"})
