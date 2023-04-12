@@ -65,7 +65,7 @@ public class PaymentService implements IPaymentService{
         return foodFuture.thenCombineAsync(couponFuture, (food, coupon) -> {
             CompletableFuture<Customer> customerFuture2 = customerFuture.thenApplyAsync(customer -> {
                 try {
-                    reduceCustomerBalance(customer, food, coupon);
+                    reduceCustomerBalanceAsync(customer, food, coupon);
                     return customer;
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
@@ -76,27 +76,18 @@ public class PaymentService implements IPaymentService{
         }).join();
     }
 
-    private CompletableFuture<Void> reduceCustomerBalance(Customer customer, Food food, Coupon coupon) throws InterruptedException {
+    private CompletableFuture<Void> reduceCustomerBalanceAsync(Customer customer, Food food, Coupon coupon) throws InterruptedException {
         double foodPrice = food.getPrice();
         double discountedPrice = coupon.redeem(foodPrice);
         boolean couponIsUsed = discountedPrice == -1;
 
-        return CompletableFuture.runAsync(() -> {
-            if (couponIsUsed) {
-                try {
-                    customer.setBalance(customer.getBalance() - discountedPrice);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-                paymentLogRepository.add(new PaymentLog(customer, food, coupon, discountedPrice));
-            } else {
-                try {
-                    customer.setBalance(customer.getBalance() - foodPrice);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-                paymentLogRepository.add(new PaymentLog(customer, food, foodPrice));
-            }
-        });
+        return customer.setBalanceAsync(customer.getBalance() - (couponIsUsed ? discountedPrice : foodPrice))
+                .thenAcceptAsync((newBalance) -> {
+                    if (couponIsUsed) {
+                        paymentLogRepository.add(new PaymentLog(customer, food, coupon, discountedPrice));
+                    } else {
+                        paymentLogRepository.add(new PaymentLog(customer, food, foodPrice));
+                    }
+                });
     }
 }
