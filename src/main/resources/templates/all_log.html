@@ -2,25 +2,42 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Orders</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 </head>
 <body>
-<div th:each="log : ${allLog}">
-    <div th:text="${log.getId()}"></div>
-
-    <div th:text="${log.getCustomerName()}"></div>
-    <div th:text="${log.getFoodName()}"></div>
-
-    <div th:text="${log.getFoodPrice()}"></div>
-
-    <div th:if="${log.isUseCoupon()}">
-        <div th:text="${log.getDiscount()}"></div>
+<div class="d-flex justify-content-center">
+    <div style="margin: 5em 0 2em 1em;">
+        <h1 class="h1 d-flex">Orders</h1>
     </div>
-
-    <div th:text="${log.getTotalPayment()}"></div>
-
-    <div th:text="${log.getCustomerBalanceAfterPayment()}"></div>
-    <br>
+</div>
+<div class="d-flex justify-content-center">
+    <table class="table table-bordered" style="width: 80%;">
+        <thead class="bg-primary" style="color: white;">
+        <tr>
+            <th scope="col" style="border-left: hidden; border-right: hidden;">ID</th>
+            <th scope="col" style="border-left: hidden; border-right: hidden;">Customer Name</th>
+            <th scope="col" style="border-left: hidden; border-right: hidden;">Food Name</th>
+            <th scope="col" style="border-left: hidden; border-right: hidden;">Food Price</th>
+            <th scope="col" style="border-left: hidden; border-right: hidden;">Use Coupon</th>
+            <th scope="col" style="border-left: hidden; border-right: hidden;">Discount</th>
+            <th scope="col" style="border-left: hidden; border-right: hidden;">Total Payment</th>
+            <th scope="col" style="border-left: hidden; border-right: hidden;">Customer Balance After Payment</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="log : ${allLog}">
+            <th scope="row" th:text="${log.getId()}"></th>
+            <td th:text="${log.getCustomerName()}"></td>
+            <td th:text="${log.getFoodName()}"></td>
+            <td th:text="${log.getFoodPrice()}"></td>
+            <td th:text="${log.isUseCoupon()}"></td>
+            <td th:text="${log.getDiscount()}"></td>
+            <td th:text="${log.getTotalPayment()}"></td>
+            <td th:text="${log.getCustomerBalanceAfterPayment()}"></td>
+        </tr>
+        </tbody>
+    </table>
 </div>
 </body>
 </html>
