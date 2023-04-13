@@ -76,7 +76,7 @@ public class PaymentService implements IPaymentService{
         }).join();
     }
 
-    private CompletableFuture<Void> reduceCustomerBalanceAsync(Customer customer, Food food, Coupon coupon) throws InterruptedException {
+    private synchronized CompletableFuture<Void> reduceCustomerBalanceAsync(Customer customer, Food food, Coupon coupon) throws InterruptedException {
         double foodPrice = food.getPrice();
         boolean[] isRedeemed = {false};
         CompletableFuture<Double> discountedPriceFuture = coupon.redeemAsync(foodPrice);

@@ -11,19 +11,14 @@ import java.util.concurrent.CompletableFuture;
 @Repository
 public class PaymentLogRepository extends BaseRepository<PaymentLog>{
     @Override
-    public void add(PaymentLog object) {
+    public synchronized void add(PaymentLog object) {
         object.setId(generateCode());
         map.put(object.getId(), object);
     }
 
     @Override
     @Async
-    public CompletableFuture<PaymentLog> get(String id) {
+    public synchronized CompletableFuture<PaymentLog> get(String id) {
         return CompletableFuture.completedFuture(map.get(id));
-    }
-
-    @Async
-    public CompletableFuture<PaymentLog> getAsync(String id) {
-        return get(id);
     }
 }

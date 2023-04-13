@@ -19,7 +19,7 @@ public class Coupon {
     }
 
     @Async("asyncExecutor")
-    public CompletableFuture<Double> redeemAsync(double price) {
+    public synchronized CompletableFuture<Double> redeemAsync(double price) {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 Thread.sleep(3000);

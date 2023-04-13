@@ -21,7 +21,7 @@ public class Customer {
     }
 
     @Async("asyncExecutor")
-    public CompletableFuture<Void> setBalanceAsync(double balance) {
+    public synchronized CompletableFuture<Void> setBalanceAsync(double balance) {
         return CompletableFuture.runAsync(() -> {
             try {
                 Thread.sleep(2000);

@@ -20,9 +20,4 @@ public class OrderRepository extends BaseRepository<Order>{
     public CompletableFuture<Order> get(String id) {
         return CompletableFuture.supplyAsync(() -> map.get(id));
     }
-
-    @Async
-    public CompletableFuture<Order> getAsync(String id) {
-        return get(id);
-    }
 }
