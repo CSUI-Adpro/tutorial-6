@@ -5,7 +5,6 @@ import lombok.Setter;
 import org.springframework.scheduling.annotation.Async;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
 
 @Setter
 @Getter
